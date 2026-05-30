@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Credentials Config
-const AUTH_USERNAME = 's9895718009@gmail.com';
+const AUTH_USERNAME = 's9895718009';
 const AUTH_PASSWORD = 'BIZ@whatz_3335596333';
 const AUTH_TOKEN = 'secure_session_token_biz_whatz_3335596333_dev_studio';
 
