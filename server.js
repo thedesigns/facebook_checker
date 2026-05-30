@@ -141,3 +141,5 @@ app.listen(PORT, () => {
   console.log(`🔗 Local Address: http://localhost:${PORT}`);
   console.log(`======================================================\n`);
 });
+
+module.exports = app;
