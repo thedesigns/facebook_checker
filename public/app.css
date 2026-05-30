@@ -1081,3 +1081,119 @@ input[type="text"]:focus, input[type="password"]:focus, select:focus, textarea:f
     text-align: center;
   }
 }
+
+/* ==========================================================================
+   AUTHENTICATION SCREEN STYLES
+   ========================================================================== */
+
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1.5rem;
+  z-index: 10;
+  position: relative;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 2.5rem;
+  animation: login-fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  background: hsla(222, 24%, 12%, 0.75);
+}
+
+@keyframes login-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-card h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  text-align: center;
+  background: linear-gradient(135deg, #fff 30%, var(--color-primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+}
+
+.login-card p {
+  color: var(--text-muted);
+  text-align: center;
+  font-size: 0.85rem;
+  margin-bottom: 2rem;
+}
+
+.login-card .form-group {
+  margin-bottom: 1.25rem;
+}
+
+.login-card label {
+  font-size: 0.72rem;
+  letter-spacing: 0.8px;
+  margin-bottom: 0.45rem;
+}
+
+.login-card input {
+  padding: 0.8rem 1rem;
+  font-size: 0.95rem;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 0.8rem 1.5rem;
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.error-banner {
+  background-color: var(--color-danger-bg);
+  border: 1px solid var(--color-danger);
+  color: hsl(350, 85%, 65%);
+  padding: 0.75rem 1rem;
+  border-radius: var(--border-radius-md);
+  font-size: 0.82rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  animation: login-shake 0.4s ease;
+}
+
+@keyframes login-shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.logout-btn-header {
+  background: hsla(350, 75%, 52%, 0.08);
+  border: 1px solid hsla(350, 75%, 52%, 0.35);
+  color: hsl(350, 85%, 65%);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.logout-btn-header:hover {
+  background-color: var(--color-danger);
+  border-color: var(--color-danger);
+  color: white;
+  box-shadow: 0 0 10px var(--color-danger-glow);
+}
+

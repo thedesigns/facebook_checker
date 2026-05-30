@@ -39,6 +39,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const elHistoryContainer = document.getElementById('history-items-container');
   const elClearHistory = document.getElementById('btn-clear-history');
 
+  // Authentication Elements
+  const elLoginWrapper = document.getElementById('login-wrapper');
+  const elAppContainer = document.getElementById('app-container');
+  const elLoginForm = document.getElementById('login-form');
+  const elLoginUsername = document.getElementById('login-username');
+  const elLoginPassword = document.getElementById('login-password');
+  const elLoginSubmit = document.getElementById('btn-login-submit');
+  const elLoginErrorBanner = document.getElementById('login-error-banner');
+  const elLoginErrorMessage = document.getElementById('error-message');
+  const elLogoutBtn = document.getElementById('btn-logout');
+
   // Local State
   let activePreset = 'subscribe_post';
   let historyLogs = [];
@@ -453,7 +464,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = await fetch('/api/proxy', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'X-Auth-Token': localStorage.getItem('auth_token') || ''
         },
         body: JSON.stringify(payload)
       });
@@ -691,9 +703,93 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================================================
+  // AUTHENTICATION LOGIC
+  // ==========================================================================
+
+  // Check login state on startup
+  function checkAuthState() {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      elLoginWrapper.classList.add('hidden');
+      elAppContainer.classList.remove('hidden');
+      loadCredentials();
+      loadHistory();
+      applyPreset('subscribe_post');
+    } else {
+      elLoginWrapper.classList.remove('hidden');
+      elAppContainer.classList.add('hidden');
+    }
+  }
+
+  // Handle Login Form Submission
+  elLoginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const username = elLoginUsername.value.trim();
+    const password = elLoginPassword.value;
+    
+    // UI Loading state
+    elLoginSubmit.disabled = true;
+    elLoginSubmit.querySelector('.btn-text').textContent = 'Authenticating...';
+    elLoginSubmit.querySelector('.btn-spinner').classList.remove('hidden');
+    elLoginErrorBanner.classList.add('hidden');
+    
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+      });
+      
+      const result = await response.json();
+      
+      if (response.ok && result.success) {
+        // Save token and initialize app
+        localStorage.setItem('auth_token', result.token);
+        
+        // Add a smooth fade-out / fade-in experience
+        elLoginWrapper.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        elLoginWrapper.style.opacity = '0';
+        elLoginWrapper.style.transform = 'scale(0.95)';
+        
+        setTimeout(() => {
+          checkAuthState();
+          // Reset styling
+          elLoginWrapper.style.opacity = '';
+          elLoginWrapper.style.transform = '';
+        }, 300);
+      } else {
+        // Show error message
+        elLoginErrorMessage.textContent = result.error || 'Invalid credentials. Please try again.';
+        elLoginErrorBanner.classList.remove('hidden');
+      }
+    } catch (err) {
+      console.error(err);
+      elLoginErrorMessage.textContent = 'Network error. Make sure the Node server is running.';
+      elLoginErrorBanner.classList.remove('hidden');
+    } finally {
+      // Revert loading state
+      elLoginSubmit.disabled = false;
+      elLoginSubmit.querySelector('.btn-text').textContent = 'Access Workspace';
+      elLoginSubmit.querySelector('.btn-spinner').classList.add('hidden');
+    }
+  });
+
+  // Handle Logout Button Click
+  elLogoutBtn.addEventListener('click', () => {
+    if (confirm('Are you sure you want to log out of the session?')) {
+      localStorage.removeItem('auth_token');
+      // Simple and secure reload or state transition
+      checkAuthState();
+      // Clear password field
+      elLoginPassword.value = '';
+    }
+  });
+
+  // ==========================================================================
   // APP INITIALIZATION
   // ==========================================================================
-  loadCredentials();
-  loadHistory();
-  applyPreset('subscribe_post');
+  checkAuthState();
 });

@@ -11,8 +11,34 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Credentials Config
+const AUTH_USERNAME = 's9895718009@gmail.com';
+const AUTH_PASSWORD = 'BIZ@whatz_3335596333';
+const AUTH_TOKEN = 'secure_session_token_biz_whatz_3335596333_dev_studio';
+
+// Auth endpoint
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ success: false, error: 'Please provide both username and password.' });
+  }
+
+  if (username.trim().toLowerCase() === AUTH_USERNAME.toLowerCase() && password === AUTH_PASSWORD) {
+    res.json({ success: true, token: AUTH_TOKEN });
+  } else {
+    res.status(401).json({ success: false, error: 'Invalid username or password.' });
+  }
+});
+
 // CORS proxy endpoint
 app.post('/api/proxy', async (req, res) => {
+  // Verify authorization token
+  const clientToken = req.headers['x-auth-token'];
+  if (clientToken !== AUTH_TOKEN) {
+    return res.status(401).json({ error: 'Unauthorized: Invalid or missing session token.' });
+  }
+
   const { path: apiPath, method, headers, queryParams, body, isJson } = req.body;
 
   if (!apiPath) {

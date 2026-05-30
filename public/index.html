@@ -20,7 +20,36 @@
   <div class="glow-bg-blob blob-2"></div>
   <div class="glow-bg-blob blob-3"></div>
 
-  <div class="app-container">
+  <!-- Login Section -->
+  <div id="login-wrapper" class="login-wrapper">
+    <div class="glass-panel login-card">
+      <h2>Developer Authentication</h2>
+      <p>Unlock Meta WhatsApp API Dev Dashboard</p>
+      
+      <div id="login-error-banner" class="error-banner hidden">
+        <span>⚠️</span> <span id="error-message">Invalid username or password.</span>
+      </div>
+      
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-username">Developer Email</label>
+          <input type="email" id="login-username" placeholder="s9895718009@gmail.com" required autocomplete="username">
+        </div>
+        
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="••••••••••••" required autocomplete="current-password">
+        </div>
+        
+        <button type="submit" id="btn-login-submit" class="btn btn-primary login-btn btn-glow">
+          <span class="btn-text">Access Workspace</span>
+          <span class="btn-spinner hidden"></span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div id="app-container" class="app-container hidden">
     
     <!-- Top Header -->
     <header class="app-header">
@@ -33,9 +62,12 @@
           <p class="subtitle">Premium No-Code Localhost Client • Graph API v20.0</p>
         </div>
       </div>
-      <div class="status-indicator">
-        <span class="status-dot online"></span>
-        <span class="status-text">CORS Proxy Active</span>
+      <div style="display: flex; align-items: center; gap: 0.8rem;">
+        <div class="status-indicator">
+          <span class="status-dot online"></span>
+          <span class="status-text">CORS Proxy Active</span>
+        </div>
+        <button type="button" id="btn-logout" class="logout-btn-header">Logout</button>
       </div>
     </header>
 
