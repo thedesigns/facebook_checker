@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meta WhatsApp Business API Dev Dashboard</title>
+  
+  <!-- Premium Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Custom Premium stylesheet -->
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+  <!-- Background Glowing Blobs -->
+  <div class="glow-bg-blob blob-1"></div>
+  <div class="glow-bg-blob blob-2"></div>
+  <div class="glow-bg-blob blob-3"></div>
+
+  <div class="app-container">
+    
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div>
+          <h1>Meta WhatsApp API Tester</h1>
+          <p class="subtitle">Premium No-Code Localhost Client • Graph API v20.0</p>
+        </div>
+      </div>
+      <div class="status-indicator">
+        <span class="status-dot online"></span>
+        <span class="status-text">CORS Proxy Active</span>
+      </div>
+    </header>
+
+    <main class="app-workspace">
+      
+      <!-- Left sidebar: Credentials & Presets -->
+      <aside class="sidebar-panel">
+        
+        <!-- Section: Credentials Manager -->
+        <section class="config-section glass-panel">
+          <div class="section-header">
+            <span class="icon">🔑</span>
+            <h2>API Credentials</h2>
+          </div>
+          
+          <div class="form-group">
+            <label for="meta-token">Meta Access Token</label>
+            <div class="input-with-action">
+              <input type="password" id="meta-token" placeholder="EAAYuSbDLE9k..." autocomplete="off">
+              <button type="button" id="toggle-token-visibility" class="action-btn" title="Toggle Visibility">
+                <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <p class="field-hint">Temporary system Access Token or Page Token</p>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="meta-page-id">Page ID</label>
+              <input type="text" id="meta-page-id" placeholder="721001787473104">
+            </div>
+            <div class="form-group col-6">
+              <label for="meta-phone-id">Phone Number ID</label>
+              <input type="text" id="meta-phone-id" placeholder="1419051192998404">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="meta-waba-id">WABA ID</label>
+              <input type="text" id="meta-waba-id" placeholder="Optional WABA Account ID">
+            </div>
+            <div class="form-group col-6">
+              <label for="meta-app-id">App ID</label>
+              <input type="text" id="meta-app-id" placeholder="Optional App ID">
+            </div>
+          </div>
+          
+          <div class="credentials-actions">
+            <button type="button" id="btn-save-credentials" class="btn btn-secondary btn-sm">Save to LocalStorage</button>
+            <button type="button" id="btn-clear-credentials" class="btn btn-danger-outline btn-sm">Clear</button>
+          </div>
+        </section>
+
+        <!-- Section: API Presets -->
+        <section class="presets-section glass-panel">
+          <div class="section-header">
+            <span class="icon">⚡</span>
+            <h2>Meta API Presets</h2>
+          </div>
+          <div class="presets-grid">
+            <button type="button" class="preset-btn" id="preset-subscribe-post" data-preset="subscribe_post">
+              <span class="badge post">POST</span> Subscribe App
+            </button>
+            <button type="button" class="preset-btn" id="preset-subscribe-get" data-preset="subscribe_get">
+              <span class="badge get">GET</span> Subscribed Apps
+            </button>
+            <button type="button" class="preset-btn" id="preset-send-template" data-preset="send_template">
+              <span class="badge post">POST</span> Send Template Msg
+            </button>
+            <button type="button" class="preset-btn" id="preset-send-text" data-preset="send_text">
+              <span class="badge post">POST</span> Send Direct Text
+            </button>
+            <button type="button" class="preset-btn" id="preset-phone-details" data-preset="phone_details">
+              <span class="badge get">GET</span> Phone ID Details
+            </button>
+            <button type="button" class="preset-btn" id="preset-custom-get" data-preset="custom_get">
+              <span class="badge get">GET</span> Custom Endpoint
+            </button>
+            <button type="button" class="preset-btn" id="preset-custom-post" data-preset="custom_post">
+              <span class="badge post">POST</span> Custom Endpoint
+            </button>
+          </div>
+        </section>
+
+      </aside>
+
+      <!-- Center area: Request Builder & Response Viewer -->
+      <section class="main-content-panel">
+        
+        <!-- Request Builder Panel -->
+        <div class="glass-panel builder-card">
+          <div class="card-header">
+            <div class="title-with-badge">
+              <span class="tag">Request Studio</span>
+              <h2 id="active-preset-title">Subscribe App to Page</h2>
+            </div>
+            <div class="methods-bar">
+              <select id="req-method" class="method-selector">
+                <option value="GET">GET</option>
+                <option value="POST" selected>POST</option>
+                <option value="DELETE">DELETE</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- URL / Path input -->
+          <div class="url-bar-container">
+            <span class="api-base">graph.facebook.com/v20.0/</span>
+            <input type="text" id="req-path" class="url-input" placeholder="721001787473104/subscribed_apps" value="721001787473104/subscribed_apps">
+          </div>
+
+          <!-- Query Parameters Editor -->
+          <div class="editor-section" id="params-section">
+            <div class="editor-section-header">
+              <h3>Query Parameters</h3>
+              <button type="button" id="btn-add-param" class="btn btn-icon-sm">+</button>
+            </div>
+            <div id="query-params-list" class="params-list">
+              <!-- Dynamically populated parameters row -->
+            </div>
+          </div>
+
+          <!-- Body / Payload Editor -->
+          <div class="editor-section" id="body-section">
+            <div class="editor-section-header">
+              <h3>Request Body</h3>
+              <div class="body-type-selector">
+                <label>
+                  <input type="radio" name="body-type" value="urlencoded" checked id="body-type-urlencoded">
+                  <span>URL-Encoded (Form)</span>
+                </label>
+                <label>
+                  <input type="radio" name="body-type" value="json" id="body-type-json">
+                  <span>JSON Payload</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- URL-Encoded Builder -->
+            <div id="body-urlencoded-container" class="params-list">
+              <!-- Dynamically populated body fields -->
+            </div>
+
+            <!-- JSON Raw Textarea -->
+            <div id="body-json-container" class="hidden">
+              <textarea id="body-json-textarea" class="code-textarea" placeholder='{
+  "messaging_product": "whatsapp",
+  "to": "1234567890",
+  "type": "text",
+  "text": {
+    "body": "Hello from Localhost!"
+  }
+}'></textarea>
+            </div>
+          </div>
+
+          <!-- Send request button -->
+          <div class="builder-actions">
+            <button type="button" id="btn-send-request" class="btn btn-primary btn-glow">
+              <span class="btn-text">Execute Request</span>
+              <span class="btn-spinner hidden"></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Response Console Panel -->
+        <div class="glass-panel response-card">
+          <div class="card-header">
+            <div class="title-with-badge">
+              <span class="tag tag-success">Response Terminal</span>
+              <h2>Output</h2>
+            </div>
+            <div class="response-meta" id="response-meta">
+              <span class="status-badge" id="resp-status">---</span>
+              <span class="latency-badge" id="resp-time">-- ms</span>
+            </div>
+          </div>
+
+          <!-- Terminal output viewport -->
+          <div class="terminal-container">
+            <div class="terminal-toolbar">
+              <div class="window-dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <span class="terminal-title" id="terminal-address">output.json</span>
+              <button type="button" id="btn-copy-response" class="btn btn-icon-sm" title="Copy Response">
+                <span class="copy-text">Copy</span>
+              </button>
+            </div>
+            <pre class="terminal-output"><code id="response-output-code">// Click "Execute Request" above to dispatch the API call...</code></pre>
+          </div>
+
+          <!-- Parsed Headers Accordion -->
+          <div class="headers-accordion">
+            <details id="headers-details">
+              <summary>View Response Headers (<span id="headers-count">0</span>)</summary>
+              <div class="headers-content" id="response-headers-list">
+                <p class="muted-text">No active response headers loaded.</p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Right sidebar: Request History log -->
+      <aside class="history-panel glass-panel">
+        <div class="section-header">
+          <span class="icon">⏳</span>
+          <h2>Request History</h2>
+          <button type="button" id="btn-clear-history" class="btn btn-icon-sm" title="Clear History">🗑️</button>
+        </div>
+        <div class="history-list" id="history-items-container">
+          <!-- Dynamically populated history logs -->
+          <div class="history-placeholder">
+            <p>No recent requests.</p>
+            <p class="muted-subtext">Executed requests will appear here for easy playback.</p>
+          </div>
+        </div>
+      </aside>
+
+    </main>
+
+    <footer class="app-footer">
+      <p>Designed for premium Meta WhatsApp API local testing. Made with Vanilla CSS Glassmorphism.</p>
+      <p class="copyright">&copy; 2026 Developer Studio</p>
+    </footer>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
