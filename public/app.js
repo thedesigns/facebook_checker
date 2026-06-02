@@ -129,6 +129,41 @@ document.addEventListener('DOMContentLoaded', () => {
       bodyFields: [],
       jsonBody: ''
     },
+    request_code: {
+      title: 'Request Verification Code',
+      method: 'POST',
+      path: '{phone_id}/request_code',
+      bodyType: 'json',
+      queryParams: [],
+      bodyFields: [],
+      jsonBody: JSON.stringify({
+        code_method: "SMS",
+        language: "en"
+      }, null, 2)
+    },
+    verify_code: {
+      title: 'Verify Code',
+      method: 'POST',
+      path: '{phone_id}/verify_code',
+      bodyType: 'json',
+      queryParams: [],
+      bodyFields: [],
+      jsonBody: JSON.stringify({
+        code: "123456"
+      }, null, 2)
+    },
+    register_number: {
+      title: 'Register Number & Create PIN',
+      method: 'POST',
+      path: '{phone_id}/register',
+      bodyType: 'json',
+      queryParams: [],
+      bodyFields: [],
+      jsonBody: JSON.stringify({
+        messaging_product: "whatsapp",
+        pin: "987654"
+      }, null, 2)
+    },
     custom_get: {
       title: 'Custom GET Endpoint',
       method: 'GET',
