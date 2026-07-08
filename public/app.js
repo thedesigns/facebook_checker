@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const elPhoneId = document.getElementById('meta-phone-id');
   const elWabaId = document.getElementById('meta-waba-id');
   const elAppId = document.getElementById('meta-app-id');
+  const elAppSecret = document.getElementById('meta-app-secret');
   const elWebhookUrl = document.getElementById('meta-webhook-url');
   const elWebhookVerifyToken = document.getElementById('meta-webhook-verify-token');
   const elFlowId = document.getElementById('meta-flow-id');
@@ -206,7 +207,9 @@ document.addEventListener('DOMContentLoaded', () => {
       method: 'POST',
       path: '{app_id}/subscriptions',
       bodyType: 'urlencoded',
-      queryParams: [],
+      queryParams: [
+        { key: 'access_token', value: '{app_access_token}' }
+      ],
       bodyFields: [
         { key: 'object', value: 'whatsapp_business_account' },
         { key: 'callback_url', value: '{webhook_url}' },
@@ -222,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
       path: '{app_id}/subscriptions',
       bodyType: 'urlencoded',
       queryParams: [
-        { key: 'access_token', value: '{token}' }
+        { key: 'access_token', value: '{app_access_token}' }
       ],
       bodyFields: [],
       jsonBody: ''
@@ -319,6 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
       phoneId: elPhoneId.value,
       wabaId: elWabaId.value,
       appId: elAppId.value,
+      appSecret: elAppSecret.value,
       webhookUrl: elWebhookUrl.value,
       webhookVerifyToken: elWebhookVerifyToken.value,
       flowId: elFlowId.value
@@ -345,6 +349,7 @@ document.addEventListener('DOMContentLoaded', () => {
     elPhoneId.value = '';
     elWabaId.value = '';
     elAppId.value = '';
+    elAppSecret.value = '';
     elWebhookUrl.value = '';
     elWebhookVerifyToken.value = '';
     elFlowId.value = '';
@@ -369,6 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
         elPhoneId.value = creds.phoneId || '';
         elWabaId.value = creds.wabaId || '';
         elAppId.value = creds.appId || '';
+        elAppSecret.value = creds.appSecret || '';
         elWebhookUrl.value = creds.webhookUrl || '';
         elWebhookVerifyToken.value = creds.webhookVerifyToken || '';
         elFlowId.value = creds.flowId || '';
@@ -519,15 +525,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const phoneId = elPhoneId.value || '1419051192998404';
     const wabaId = elWabaId.value || 'WABA_ACCOUNT_ID';
     const appId = elAppId.value || 'APP_ID';
+    const appSecret = elAppSecret.value || '';
     const webhookUrl = elWebhookUrl.value || '';
     const webhookVerifyToken = elWebhookVerifyToken.value || '';
     const token = elToken.value || 'ACCESS_TOKEN';
     const flowId = elFlowId.value || 'FLOW_ID';
+    const appAccessToken = (appId && appSecret) ? `${appId}|${appSecret}` : token;
 
     res = res.replace(/{page_id}/g, pageId);
     res = res.replace(/{phone_id}/g, phoneId);
     res = res.replace(/{waba_id}/g, wabaId);
     res = res.replace(/{app_id}/g, appId);
+    res = res.replace(/{app_secret}/g, appSecret);
+    res = res.replace(/{app_access_token}/g, appAccessToken);
     res = res.replace(/{webhook_url}/g, webhookUrl);
     res = res.replace(/{webhook_verify_token}/g, webhookVerifyToken);
     res = res.replace(/{token}/g, token);
@@ -563,7 +573,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Build Headers
     const headers = {};
-    headers['Authorization'] = `Bearer ${token}`;
+    let activeToken = token;
+
+    // For webhook subscriptions, use the App Access Token (app_id|app_secret)
+    if (activePreset === 'update_webhook_subscription' || activePreset === 'get_webhook_subscriptions') {
+      const appId = elAppId.value.trim();
+      const appSecret = elAppSecret.value.trim();
+      if (appId && appSecret) {
+        activeToken = `${appId}|${appSecret}`;
+      }
+    }
+
+    headers['Authorization'] = `Bearer ${activeToken}`;
 
     // Read Query Params
     const queryParams = {};
