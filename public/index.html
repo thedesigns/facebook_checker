@@ -108,12 +108,29 @@
           <div class="form-row">
             <div class="form-group col-6">
               <label for="meta-waba-id">WABA ID</label>
-              <input type="text" id="meta-waba-id" placeholder="Optional WABA Account ID">
+              <input type="text" id="meta-waba-id" placeholder="WABA Account ID">
             </div>
             <div class="form-group col-6">
               <label for="meta-app-id">App ID</label>
               <input type="text" id="meta-app-id" placeholder="Optional App ID">
             </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="meta-webhook-url">App Webhook URL</label>
+              <input type="text" id="meta-webhook-url" placeholder="https://example.com/api/webhook">
+            </div>
+            <div class="form-group col-6">
+              <label for="meta-webhook-verify-token">Webhook Verify Token</label>
+              <input type="text" id="meta-webhook-verify-token" placeholder="Verify Token">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="meta-flow-id">Flow ID</label>
+            <input type="text" id="meta-flow-id" placeholder="Flow ID (for Get/Update/Publish/Delete)">
+            <p class="field-hint">Required for single-flow operations</p>
           </div>
           
           <div class="credentials-actions">
@@ -158,6 +175,105 @@
             </button>
             <button type="button" class="preset-btn" id="preset-custom-post" data-preset="custom_post">
               <span class="badge post">POST</span> Custom Endpoint
+            </button>
+
+            <!-- Webhooks Presets Divider -->
+            <div class="preset-group-divider preset-webhook-divider">
+              <span class="divider-icon">🔌</span>
+              <span class="divider-label">Webhooks Subscription</span>
+            </div>
+
+            <button type="button" class="preset-btn preset-webhook" id="preset-update-webhook" data-preset="update_webhook_subscription">
+              <span class="badge post">POST</span> Config Webhook
+            </button>
+            <button type="button" class="preset-btn preset-webhook" id="preset-get-webhook" data-preset="get_webhook_subscriptions">
+              <span class="badge get">GET</span> List Webhooks
+            </button>
+
+            <!-- Flows Presets Divider -->
+            <div class="preset-group-divider">
+              <span class="divider-icon">🔄</span>
+              <span class="divider-label">WhatsApp Flows</span>
+            </div>
+
+            <button type="button" class="preset-btn preset-flow" id="preset-create-flow" data-preset="create_flow">
+              <span class="badge post">POST</span> Create Flow
+            </button>
+            <button type="button" class="preset-btn preset-flow" id="preset-list-flows" data-preset="list_flows">
+              <span class="badge get">GET</span> List All Flows
+            </button>
+            <button type="button" class="preset-btn preset-flow" id="preset-get-flow" data-preset="get_flow">
+              <span class="badge get">GET</span> Get Flow Details
+            </button>
+            <button type="button" class="preset-btn preset-flow" id="preset-update-flow" data-preset="update_flow">
+              <span class="badge post">POST</span> Update Flow
+            </button>
+            <button type="button" class="preset-btn preset-flow" id="preset-publish-flow" data-preset="publish_flow">
+              <span class="badge post">POST</span> Publish Flow
+            </button>
+            <button type="button" class="preset-btn preset-flow" id="preset-delete-flow" data-preset="delete_flow">
+              <span class="badge delete">DEL</span> Delete Flow
+            </button>
+          </div>
+        </section>
+
+        <!-- Section: Flows Builder -->
+        <section class="flows-builder-section glass-panel">
+          <div class="section-header">
+            <span class="icon">🔄</span>
+            <h2>Flows Builder</h2>
+          </div>
+
+          <div class="form-group">
+            <label for="flow-name">Flow Name</label>
+            <input type="text" id="flow-name" placeholder="My WhatsApp Flow">
+          </div>
+
+          <div class="form-group">
+            <label for="flow-category">Category</label>
+            <select id="flow-category">
+              <option value="SIGN_UP">Sign Up</option>
+              <option value="SIGN_IN">Sign In</option>
+              <option value="APPOINTMENT_BOOKING">Appointment Booking</option>
+              <option value="LEAD_GENERATION">Lead Generation</option>
+              <option value="CONTACT_US">Contact Us</option>
+              <option value="CUSTOMER_SUPPORT">Customer Support</option>
+              <option value="SURVEY">Survey</option>
+              <option value="OTHER" selected>Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="flow-template-select">Flow JSON Template</label>
+            <select id="flow-template-select">
+              <option value="hello_world">Hello World (Minimal)</option>
+              <option value="sign_up">Sign Up Form</option>
+              <option value="appointment">Appointment Booking</option>
+              <option value="lead_gen">Lead Generation</option>
+              <option value="survey">Survey / Feedback</option>
+              <option value="custom_empty" selected>Custom (Empty)</option>
+            </select>
+            <p class="field-hint">Select a template to auto-fill the Flow JSON editor</p>
+          </div>
+
+          <div class="form-group">
+            <label for="flow-json-editor">Flow JSON</label>
+            <textarea id="flow-json-editor" class="code-textarea flow-json-textarea" placeholder='{
+  "version": "5.0",
+  "screens": []
+}'></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="flow-checkbox-label">
+              <input type="checkbox" id="flow-publish-immediately">
+              <span>Publish immediately after creation</span>
+            </label>
+          </div>
+
+          <div class="flows-builder-actions">
+            <button type="button" id="btn-generate-flow-request" class="btn btn-flow btn-glow">
+              <span class="btn-text">⚡ Load into Request Studio</span>
             </button>
           </div>
         </section>
@@ -285,18 +401,67 @@
 
       </section>
 
-      <!-- Right sidebar: Request History log -->
+      <!-- Right sidebar: Request History & Live Webhooks -->
       <aside class="history-panel glass-panel">
-        <div class="section-header">
-          <span class="icon">⏳</span>
-          <h2>Request History</h2>
-          <button type="button" id="btn-clear-history" class="btn btn-icon-sm" title="Clear History">🗑️</button>
+        <div class="sidebar-tabs">
+          <button type="button" id="tab-history" class="sidebar-tab active">
+            <span class="icon">⏳</span> History
+          </button>
+          <button type="button" id="tab-webhooks" class="sidebar-tab">
+            <span class="icon">🔌</span> Webhooks <span id="webhook-badge" class="badge-count hidden">0</span>
+          </button>
         </div>
-        <div class="history-list" id="history-items-container">
-          <!-- Dynamically populated history logs -->
-          <div class="history-placeholder">
-            <p>No recent requests.</p>
-            <p class="muted-subtext">Executed requests will appear here for easy playback.</p>
+        
+        <!-- Tab 1 Content: History -->
+        <div id="section-history" class="tab-content">
+          <div class="section-header-sub">
+            <h2>Request History</h2>
+            <button type="button" id="btn-clear-history" class="btn btn-icon-sm" title="Clear History">🗑️</button>
+          </div>
+          <div class="history-list" id="history-items-container">
+            <!-- Dynamically populated history logs -->
+            <div class="history-placeholder">
+              <p>No recent requests.</p>
+              <p class="muted-subtext">Executed requests will appear here for easy playback.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2 Content: Webhooks -->
+        <div id="section-webhooks" class="tab-content hidden">
+          <div class="section-header-sub">
+            <h2>Live Webhooks</h2>
+            <button type="button" id="btn-clear-webhooks" class="btn btn-icon-sm" title="Clear Webhooks">🗑️</button>
+          </div>
+
+          <!-- Webhook Settings & Info Box -->
+          <div class="webhook-info-card">
+            <div class="info-group">
+              <label>Local Webhook Endpoint URL</label>
+              <div class="copy-url-container">
+                <span id="webhook-endpoint-url" class="endpoint-url-text">http://localhost:3000/api/webhook</span>
+                <button type="button" id="btn-copy-webhook-url" class="btn-copy-sm" title="Copy URL">Copy</button>
+              </div>
+              <p class="field-hint">Specify this URL in your Meta App settings</p>
+            </div>
+            
+            <div class="info-group">
+              <label for="local-verify-token">Local verify token</label>
+              <div class="input-with-action-sm">
+                <input type="text" id="local-verify-token" value="secure_webhook_verify_token_3335596333" placeholder="Verify Token">
+                <button type="button" id="btn-save-local-token" class="btn-save-sm">Sync</button>
+              </div>
+              <p class="field-hint">Used by local server for verification challenge</p>
+            </div>
+          </div>
+
+          <!-- Webhooks Feed List -->
+          <div class="history-list" id="webhook-items-container">
+            <!-- Dynamically populated webhooks -->
+            <div class="history-placeholder">
+              <p>Listening for webhooks...</p>
+              <p class="muted-subtext">Configure your Meta App Webhook URL to point to this server to capture webhook event payloads.</p>
+            </div>
           </div>
         </div>
       </aside>

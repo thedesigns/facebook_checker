@@ -130,6 +130,69 @@ app.post('/api/proxy', async (req, res) => {
   }
 });
 
+// Webhook state (in-memory)
+let webhookVerifyToken = 'secure_webhook_verify_token_3335596333';
+let receivedWebhooks = [];
+
+// GET Webhook verification challenge
+app.get('/api/webhook', (req, res) => {
+  const mode = req.query['hub.mode'];
+  const token = req.query['hub.verify_token'];
+  const challenge = req.query['hub.challenge'];
+
+  if (mode === 'subscribe' && token === webhookVerifyToken) {
+    console.log('[WEBHOOK] Verification successful.');
+    return res.status(200).send(challenge);
+  } else {
+    console.warn('[WEBHOOK] Verification failed. Expected:', webhookVerifyToken, 'Received:', token);
+    return res.status(403).send('Forbidden');
+  }
+});
+
+// POST Webhook event receiver
+app.post('/api/webhook', (req, res) => {
+  const timestamp = new Date().toISOString();
+  const webhookEvent = {
+    id: Date.now() + Math.random().toString(36).substr(2, 9),
+    timestamp,
+    headers: req.headers,
+    query: req.query,
+    body: req.body
+  };
+
+  console.log(`[WEBHOOK RECEIVED] ${timestamp}`);
+  receivedWebhooks.unshift(webhookEvent);
+
+  // Keep last 50 webhooks
+  if (receivedWebhooks.length > 50) {
+    receivedWebhooks.pop();
+  }
+
+  res.status(200).json({ success: true });
+});
+
+// GET list of received webhooks
+app.get('/api/webhooks', (req, res) => {
+  res.json(receivedWebhooks);
+});
+
+// POST update webhook settings
+app.post('/api/webhook/settings', (req, res) => {
+  const { verifyToken } = req.body;
+  if (verifyToken !== undefined) {
+    webhookVerifyToken = verifyToken.trim();
+    console.log(`[WEBHOOK] Verify token updated to: ${webhookVerifyToken}`);
+    return res.json({ success: true, verifyToken: webhookVerifyToken });
+  }
+  res.status(400).json({ error: 'Missing verifyToken parameter' });
+});
+
+// POST clear webhooks log
+app.post('/api/webhooks/clear', (req, res) => {
+  receivedWebhooks = [];
+  res.json({ success: true });
+});
+
 // Fallback to serving the SPA for any other route
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));

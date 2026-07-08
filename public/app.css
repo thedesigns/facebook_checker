@@ -1056,6 +1056,112 @@ input[type="text"]:focus, input[type="password"]:focus, select:focus, textarea:f
 }
 
 /* ==========================================================================
+   FLOWS BUILDER & PRESETS
+   ========================================================================== */
+
+/* Preset Group Divider */
+.preset-group-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0 0.3rem;
+  margin-top: 0.4rem;
+  border-top: 1px solid hsla(270, 50%, 50%, 0.25);
+}
+
+.divider-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.divider-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  background: linear-gradient(90deg, hsl(270, 70%, 65%), hsl(200, 80%, 60%));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Flow preset buttons accent */
+.preset-btn.preset-flow.active {
+  background-color: hsla(270, 70%, 60%, 0.15);
+  border-color: hsl(270, 70%, 60%);
+  box-shadow: inset 0 0 10px hsla(270, 70%, 60%, 0.1);
+}
+
+/* Flows Builder Section */
+.flows-builder-section {
+  padding: 1.5rem;
+}
+
+.flows-builder-section .section-header {
+  border-bottom-color: hsla(270, 50%, 50%, 0.3);
+}
+
+.flows-builder-section .section-header h2 {
+  background: linear-gradient(90deg, hsl(270, 70%, 70%), hsl(200, 80%, 65%));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.flow-json-textarea {
+  height: 220px;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+/* Flow checkbox label */
+.flow-checkbox-label {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  text-transform: none !important;
+  font-weight: 500 !important;
+  font-size: 0.82rem !important;
+  letter-spacing: 0 !important;
+  color: var(--text-secondary) !important;
+  margin-bottom: 0 !important;
+}
+
+.flow-checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: hsl(270, 70%, 60%);
+  cursor: pointer;
+}
+
+/* Flows Builder Actions */
+.flows-builder-actions {
+  display: flex;
+  justify-content: stretch;
+  margin-top: 0.5rem;
+}
+
+.btn-flow {
+  width: 100%;
+  background: linear-gradient(135deg, hsl(270, 70%, 55%), hsl(220, 75%, 55%));
+  color: white;
+  font-weight: 700;
+  padding: 0.7rem 1.2rem;
+  box-shadow: 0 4px 18px hsla(270, 70%, 55%, 0.35);
+  border: none;
+  transition: all var(--transition-fast);
+}
+
+.btn-flow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px hsla(270, 70%, 55%, 0.5);
+  background: linear-gradient(135deg, hsl(270, 70%, 62%), hsl(220, 75%, 62%));
+}
+
+.btn-flow:active {
+  transform: translateY(0);
+}
+
+/* ==========================================================================
    FOOTER
    ========================================================================== */
 
@@ -1196,4 +1302,285 @@ input[type="text"]:focus, input[type="password"]:focus, select:focus, textarea:f
   color: white;
   box-shadow: 0 0 10px var(--color-danger-glow);
 }
+
+/* ==========================================================================
+   WEBHOOK MANAGER & LOGGER STYLES
+   ========================================================================== */
+
+.sidebar-tabs {
+  display: flex;
+  background: hsla(222, 24%, 6%, 0.5);
+  border-bottom: 1px solid var(--border-color);
+  border-top-left-radius: var(--border-radius-lg);
+  border-top-right-radius: var(--border-radius-lg);
+  overflow: hidden;
+}
+
+.sidebar-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 0.85rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: all var(--transition-fast);
+  border-bottom: 2px solid transparent;
+}
+
+.sidebar-tab:hover {
+  color: var(--text-primary);
+  background: hsla(222, 24%, 12%, 0.3);
+}
+
+.sidebar-tab.active {
+  color: var(--color-primary);
+  background: hsla(222, 24%, 12%, 0.6);
+  border-bottom-color: var(--color-primary);
+  text-shadow: 0 0 10px var(--color-primary-glow);
+}
+
+.tab-content {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 46px); /* subtract tab height */
+}
+
+.tab-content.hidden {
+  display: none !important;
+}
+
+.section-header-sub {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.section-header-sub h2 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-primary);
+}
+
+/* Webhook Info Card */
+.webhook-info-card {
+  background: hsla(222, 30%, 4%, 0.6);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 0.9rem;
+  margin-bottom: 1.25rem;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.webhook-info-card .info-group {
+  margin-bottom: 0.75rem;
+}
+
+.webhook-info-card .info-group:last-child {
+  margin-bottom: 0;
+}
+
+.webhook-info-card label {
+  font-size: 0.68rem;
+  margin-bottom: 0.25rem;
+  color: var(--text-muted);
+}
+
+.copy-url-container {
+  display: flex;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+  align-items: center;
+}
+
+.endpoint-url-text {
+  flex: 1;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  padding: 0.45rem 0.6rem;
+  color: hsl(150, 75%, 65%);
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none; /* Hide scrollbar for clean look */
+}
+.endpoint-url-text::-webkit-scrollbar {
+  display: none;
+}
+
+.btn-copy-sm, .btn-save-sm {
+  background: var(--border-color);
+  border: none;
+  border-left: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-copy-sm:hover, .btn-save-sm:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
+.input-with-action-sm {
+  display: flex;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.input-with-action-sm input {
+  flex: 1;
+  background: var(--bg-input);
+  border: none;
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  padding: 0.45rem 0.6rem;
+}
+
+.input-with-action-sm input:focus {
+  outline: none;
+}
+
+/* Badge Count */
+.badge-count {
+  background: var(--color-danger);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.1rem 0.35rem;
+  border-radius: 10px;
+  margin-left: 0.2rem;
+  box-shadow: 0 0 8px var(--color-danger-glow);
+}
+
+.badge-count.hidden {
+  display: none !important;
+}
+
+/* Webhook Log Items */
+.webhook-item {
+  background: hsla(222, 24%, 10%, 0.4);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+  transition: all var(--transition-fast);
+}
+
+.webhook-item:hover {
+  border-color: hsla(250, 40%, 45%, 0.3);
+  transform: translateY(-1px);
+}
+
+.webhook-item-header {
+  padding: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.webhook-item-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.webhook-item-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.webhook-event-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: hsla(250, 75%, 62%, 0.15);
+  color: hsl(250, 75%, 70%);
+  border: 1px solid hsla(250, 75%, 62%, 0.3);
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+}
+
+.webhook-event-badge.status-update {
+  background: hsla(200, 80%, 55%, 0.15);
+  color: hsl(200, 80%, 65%);
+  border-color: hsla(200, 80%, 55%, 0.3);
+}
+
+.webhook-event-badge.incoming-msg {
+  background: hsla(150, 75%, 45%, 0.15);
+  color: hsl(150, 75%, 55%);
+  border-color: hsla(150, 75%, 45%, 0.3);
+}
+
+.webhook-item-time {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+}
+
+.webhook-item-summary {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.webhook-item-details {
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-terminal);
+  padding: 0.75rem;
+  display: none; /* Controlled by JS toggle */
+}
+
+.webhook-item.expanded .webhook-item-details {
+  display: block;
+}
+
+.webhook-json-payload {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: hsl(120, 80%, 75%);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 250px;
+  scrollbar-width: thin;
+}
+
+.preset-webhook-divider {
+  border-top-color: hsla(150, 50%, 50%, 0.25) !important;
+}
+
+.preset-webhook-divider .divider-label {
+  background: linear-gradient(90deg, hsl(150, 70%, 65%), hsl(200, 80%, 60%)) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+.preset-btn.preset-webhook.active {
+  background-color: hsla(150, 70%, 60%, 0.15) !important;
+  border-color: hsl(150, 70%, 60%) !important;
+  box-shadow: inset 0 0 10px hsla(150, 70%, 60%, 0.1) !important;
+}
+
 

@@ -11,9 +11,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const elPhoneId = document.getElementById('meta-phone-id');
   const elWabaId = document.getElementById('meta-waba-id');
   const elAppId = document.getElementById('meta-app-id');
+  const elWebhookUrl = document.getElementById('meta-webhook-url');
+  const elWebhookVerifyToken = document.getElementById('meta-webhook-verify-token');
+  const elFlowId = document.getElementById('meta-flow-id');
   const elToggleToken = document.getElementById('toggle-token-visibility');
   const elSaveCreds = document.getElementById('btn-save-credentials');
   const elClearCreds = document.getElementById('btn-clear-credentials');
+
+  // Sidebar Tab Elements
+  const elTabHistory = document.getElementById('tab-history');
+  const elTabWebhooks = document.getElementById('tab-webhooks');
+  const elSectionHistory = document.getElementById('section-history');
+  const elSectionWebhooks = document.getElementById('section-webhooks');
+  const elWebhookBadge = document.getElementById('webhook-badge');
+  const elWebhookEndpointUrl = document.getElementById('webhook-endpoint-url');
+  const elBtnCopyWebhookUrl = document.getElementById('btn-copy-webhook-url');
+  const elLocalVerifyToken = document.getElementById('local-verify-token');
+  const elBtnSaveLocalToken = document.getElementById('btn-save-local-token');
+  const elWebhookItemsContainer = document.getElementById('webhook-items-container');
+  const elBtnClearWebhooks = document.getElementById('btn-clear-webhooks');
   
   const elActivePresetTitle = document.getElementById('active-preset-title');
   const elReqMethod = document.getElementById('req-method');
@@ -183,6 +199,100 @@ document.addEventListener('DOMContentLoaded', () => {
       queryParams: [],
       bodyFields: [],
       jsonBody: '{\n  \n}'
+    },
+    // ========== WEBHOOKS PRESETS ==========
+    update_webhook_subscription: {
+      title: 'Configure Meta App Webhook Subscription',
+      method: 'POST',
+      path: '{app_id}/subscriptions',
+      bodyType: 'urlencoded',
+      queryParams: [],
+      bodyFields: [
+        { key: 'object', value: 'whatsapp_business_account' },
+        { key: 'callback_url', value: '{webhook_url}' },
+        { key: 'verify_token', value: '{webhook_verify_token}' },
+        { key: 'fields', value: 'messages' },
+        { key: 'active', value: 'true' }
+      ],
+      jsonBody: ''
+    },
+    get_webhook_subscriptions: {
+      title: 'List Meta App Webhook Subscriptions',
+      method: 'GET',
+      path: '{app_id}/subscriptions',
+      bodyType: 'urlencoded',
+      queryParams: [
+        { key: 'access_token', value: '{token}' }
+      ],
+      bodyFields: [],
+      jsonBody: ''
+    },
+    // ========== FLOWS PRESETS ==========
+    create_flow: {
+      title: 'Create WhatsApp Flow',
+      method: 'POST',
+      path: '{waba_id}/flows',
+      bodyType: 'json',
+      queryParams: [],
+      bodyFields: [],
+      jsonBody: JSON.stringify({
+        name: "My WhatsApp Flow",
+        categories: ["OTHER"]
+      }, null, 2)
+    },
+    list_flows: {
+      title: 'List All WhatsApp Flows',
+      method: 'GET',
+      path: '{waba_id}/flows',
+      bodyType: 'urlencoded',
+      queryParams: [
+        { key: 'access_token', value: '{token}' }
+      ],
+      bodyFields: [],
+      jsonBody: ''
+    },
+    get_flow: {
+      title: 'Get Flow Details',
+      method: 'GET',
+      path: '{flow_id}',
+      bodyType: 'urlencoded',
+      queryParams: [
+        { key: 'access_token', value: '{token}' }
+      ],
+      bodyFields: [],
+      jsonBody: ''
+    },
+    update_flow: {
+      title: 'Update Flow Metadata',
+      method: 'POST',
+      path: '{flow_id}',
+      bodyType: 'json',
+      queryParams: [],
+      bodyFields: [],
+      jsonBody: JSON.stringify({
+        name: "Updated Flow Name",
+        categories: ["OTHER"]
+      }, null, 2)
+    },
+    publish_flow: {
+      title: 'Publish Flow',
+      method: 'POST',
+      path: '{flow_id}/publish',
+      bodyType: 'json',
+      queryParams: [],
+      bodyFields: [],
+      jsonBody: ''
+    },
+    delete_flow: {
+      title: 'Delete Flow',
+      method: 'DELETE',
+      path: '{flow_id}',
+      bodyType: 'urlencoded',
+      queryParams: [
+        { key: 'access_token', value: '{token}' }
+      ],
+      bodyFields: [],
+      jsonBody: ''
     }
   };
 
@@ -208,7 +318,10 @@ document.addEventListener('DOMContentLoaded', () => {
       pageId: elPageId.value,
       phoneId: elPhoneId.value,
       wabaId: elWabaId.value,
-      appId: elAppId.value
+      appId: elAppId.value,
+      webhookUrl: elWebhookUrl.value,
+      webhookVerifyToken: elWebhookVerifyToken.value,
+      flowId: elFlowId.value
     };
     localStorage.setItem('meta_api_credentials', JSON.stringify(creds));
     
@@ -232,6 +345,9 @@ document.addEventListener('DOMContentLoaded', () => {
     elPhoneId.value = '';
     elWabaId.value = '';
     elAppId.value = '';
+    elWebhookUrl.value = '';
+    elWebhookVerifyToken.value = '';
+    elFlowId.value = '';
     localStorage.removeItem('meta_api_credentials');
     
     // Quick visual notification
@@ -253,6 +369,9 @@ document.addEventListener('DOMContentLoaded', () => {
         elPhoneId.value = creds.phoneId || '';
         elWabaId.value = creds.wabaId || '';
         elAppId.value = creds.appId || '';
+        elWebhookUrl.value = creds.webhookUrl || '';
+        elWebhookVerifyToken.value = creds.webhookVerifyToken || '';
+        elFlowId.value = creds.flowId || '';
       } catch (e) {
         console.error('Failed to parse credentials', e);
       }
@@ -400,13 +519,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const phoneId = elPhoneId.value || '1419051192998404';
     const wabaId = elWabaId.value || 'WABA_ACCOUNT_ID';
     const appId = elAppId.value || 'APP_ID';
+    const webhookUrl = elWebhookUrl.value || '';
+    const webhookVerifyToken = elWebhookVerifyToken.value || '';
     const token = elToken.value || 'ACCESS_TOKEN';
+    const flowId = elFlowId.value || 'FLOW_ID';
 
     res = res.replace(/{page_id}/g, pageId);
     res = res.replace(/{phone_id}/g, phoneId);
     res = res.replace(/{waba_id}/g, wabaId);
     res = res.replace(/{app_id}/g, appId);
+    res = res.replace(/{webhook_url}/g, webhookUrl);
+    res = res.replace(/{webhook_verify_token}/g, webhookVerifyToken);
     res = res.replace(/{token}/g, token);
+    res = res.replace(/{flow_id}/g, flowId);
 
     return res;
   }
@@ -750,9 +875,11 @@ document.addEventListener('DOMContentLoaded', () => {
       loadCredentials();
       loadHistory();
       applyPreset('subscribe_post');
+      startWebhookPolling();
     } else {
       elLoginWrapper.classList.remove('hidden');
       elAppContainer.classList.add('hidden');
+      stopWebhookPolling();
     }
   }
 
@@ -816,12 +943,638 @@ document.addEventListener('DOMContentLoaded', () => {
   elLogoutBtn.addEventListener('click', () => {
     if (confirm('Are you sure you want to log out of the session?')) {
       localStorage.removeItem('auth_token');
+      stopWebhookPolling();
       // Simple and secure reload or state transition
       checkAuthState();
       // Clear password field
       elLoginPassword.value = '';
     }
   });
+
+  // ==========================================================================
+  // FLOWS BUILDER LOGIC
+  // ==========================================================================
+
+  const FLOW_TEMPLATES = {
+    hello_world: {
+      version: "5.0",
+      screens: [
+        {
+          id: "WELCOME",
+          title: "Welcome",
+          layout: {
+            type: "SingleColumnLayout",
+            children: [
+              {
+                type: "TextHeading",
+                text: "Hello World!"
+              },
+              {
+                type: "TextBody",
+                text: "This is a minimal WhatsApp Flow for testing."
+              },
+              {
+                type: "Footer",
+                label: "Done",
+                "on-click-action": {
+                  name: "complete",
+                  payload: {}
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    sign_up: {
+      version: "5.0",
+      screens: [
+        {
+          id: "SIGN_UP",
+          title: "Sign Up",
+          data: {},
+          layout: {
+            type: "SingleColumnLayout",
+            children: [
+              {
+                type: "TextHeading",
+                text: "Create Your Account"
+              },
+              {
+                type: "TextInput",
+                label: "Full Name",
+                name: "full_name",
+                required: true,
+                "input-type": "text"
+              },
+              {
+                type: "TextInput",
+                label: "Email Address",
+                name: "email",
+                required: true,
+                "input-type": "email"
+              },
+              {
+                type: "TextInput",
+                label: "Phone Number",
+                name: "phone",
+                required: true,
+                "input-type": "phone"
+              },
+              {
+                type: "OptIn",
+                label: "I agree to the Terms & Conditions",
+                name: "terms_agreed",
+                required: true
+              },
+              {
+                type: "Footer",
+                label: "Sign Up",
+                "on-click-action": {
+                  name: "complete",
+                  payload: {
+                    full_name: "${form.full_name}",
+                    email: "${form.email}",
+                    phone: "${form.phone}",
+                    terms_agreed: "${form.terms_agreed}"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    appointment: {
+      version: "5.0",
+      screens: [
+        {
+          id: "APPOINTMENT",
+          title: "Book Appointment",
+          data: {},
+          layout: {
+            type: "SingleColumnLayout",
+            children: [
+              {
+                type: "TextHeading",
+                text: "Schedule Your Appointment"
+              },
+              {
+                type: "TextInput",
+                label: "Your Name",
+                name: "customer_name",
+                required: true,
+                "input-type": "text"
+              },
+              {
+                type: "DatePicker",
+                label: "Preferred Date",
+                name: "appointment_date",
+                required: true
+              },
+              {
+                type: "Dropdown",
+                label: "Preferred Time Slot",
+                name: "time_slot",
+                required: true,
+                "data-source": [
+                  { id: "morning", title: "9:00 AM - 12:00 PM" },
+                  { id: "afternoon", title: "12:00 PM - 3:00 PM" },
+                  { id: "evening", title: "3:00 PM - 6:00 PM" }
+                ]
+              },
+              {
+                type: "TextArea",
+                label: "Additional Notes",
+                name: "notes",
+                required: false
+              },
+              {
+                type: "Footer",
+                label: "Confirm Booking",
+                "on-click-action": {
+                  name: "complete",
+                  payload: {
+                    customer_name: "${form.customer_name}",
+                    appointment_date: "${form.appointment_date}",
+                    time_slot: "${form.time_slot}",
+                    notes: "${form.notes}"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    lead_gen: {
+      version: "5.0",
+      screens: [
+        {
+          id: "LEAD_FORM",
+          title: "Get in Touch",
+          data: {},
+          layout: {
+            type: "SingleColumnLayout",
+            children: [
+              {
+                type: "TextHeading",
+                text: "We'd love to hear from you"
+              },
+              {
+                type: "TextBody",
+                text: "Fill in your details and our team will reach out shortly."
+              },
+              {
+                type: "TextInput",
+                label: "Full Name",
+                name: "lead_name",
+                required: true,
+                "input-type": "text"
+              },
+              {
+                type: "TextInput",
+                label: "Email",
+                name: "lead_email",
+                required: true,
+                "input-type": "email"
+              },
+              {
+                type: "TextInput",
+                label: "Company",
+                name: "lead_company",
+                required: false,
+                "input-type": "text"
+              },
+              {
+                type: "Dropdown",
+                label: "Interested In",
+                name: "interest",
+                required: true,
+                "data-source": [
+                  { id: "product_demo", title: "Product Demo" },
+                  { id: "pricing", title: "Pricing Information" },
+                  { id: "partnership", title: "Partnership Inquiry" },
+                  { id: "support", title: "Technical Support" },
+                  { id: "other", title: "Other" }
+                ]
+              },
+              {
+                type: "Footer",
+                label: "Submit",
+                "on-click-action": {
+                  name: "complete",
+                  payload: {
+                    lead_name: "${form.lead_name}",
+                    lead_email: "${form.lead_email}",
+                    lead_company: "${form.lead_company}",
+                    interest: "${form.interest}"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    survey: {
+      version: "5.0",
+      screens: [
+        {
+          id: "SURVEY",
+          title: "Quick Survey",
+          data: {},
+          layout: {
+            type: "SingleColumnLayout",
+            children: [
+              {
+                type: "TextHeading",
+                text: "We Value Your Feedback"
+              },
+              {
+                type: "TextBody",
+                text: "Help us improve by answering a few quick questions."
+              },
+              {
+                type: "Dropdown",
+                label: "How would you rate your experience?",
+                name: "rating",
+                required: true,
+                "data-source": [
+                  { id: "5", title: "⭐⭐⭐⭐⭐ Excellent" },
+                  { id: "4", title: "⭐⭐⭐⭐ Good" },
+                  { id: "3", title: "⭐⭐⭐ Average" },
+                  { id: "2", title: "⭐⭐ Poor" },
+                  { id: "1", title: "⭐ Very Poor" }
+                ]
+              },
+              {
+                type: "Dropdown",
+                label: "Would you recommend us?",
+                name: "recommend",
+                required: true,
+                "data-source": [
+                  { id: "yes", title: "Yes, definitely" },
+                  { id: "maybe", title: "Maybe" },
+                  { id: "no", title: "No" }
+                ]
+              },
+              {
+                type: "TextArea",
+                label: "Any additional comments?",
+                name: "comments",
+                required: false
+              },
+              {
+                type: "Footer",
+                label: "Submit Feedback",
+                "on-click-action": {
+                  name: "complete",
+                  payload: {
+                    rating: "${form.rating}",
+                    recommend: "${form.recommend}",
+                    comments: "${form.comments}"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    custom_empty: {
+      version: "5.0",
+      screens: []
+    }
+  };
+
+  // Flows Builder Elements
+  const elFlowName = document.getElementById('flow-name');
+  const elFlowCategory = document.getElementById('flow-category');
+  const elFlowTemplateSelect = document.getElementById('flow-template-select');
+  const elFlowJsonEditor = document.getElementById('flow-json-editor');
+  const elFlowPublishImmediately = document.getElementById('flow-publish-immediately');
+  const elBtnGenerateFlowRequest = document.getElementById('btn-generate-flow-request');
+
+  // Template Selector Handler
+  elFlowTemplateSelect.addEventListener('change', () => {
+    const templateKey = elFlowTemplateSelect.value;
+    const template = FLOW_TEMPLATES[templateKey];
+    if (template) {
+      elFlowJsonEditor.value = JSON.stringify(template, null, 2);
+
+      // Auto-set category based on template
+      const categoryMap = {
+        hello_world: 'OTHER',
+        sign_up: 'SIGN_UP',
+        appointment: 'APPOINTMENT_BOOKING',
+        lead_gen: 'LEAD_GENERATION',
+        survey: 'SURVEY',
+        custom_empty: 'OTHER'
+      };
+      if (categoryMap[templateKey]) {
+        elFlowCategory.value = categoryMap[templateKey];
+      }
+    }
+  });
+
+  // Generate Flow Create Request → Load into Request Studio
+  elBtnGenerateFlowRequest.addEventListener('click', () => {
+    const flowName = elFlowName.value.trim() || 'My WhatsApp Flow';
+    const category = elFlowCategory.value;
+    const publishNow = elFlowPublishImmediately.checked;
+    const flowJsonRaw = elFlowJsonEditor.value.trim();
+
+    // Validate flow JSON
+    if (flowJsonRaw) {
+      try {
+        JSON.parse(flowJsonRaw);
+      } catch (e) {
+        alert('Invalid Flow JSON. Please fix the formatting before loading.');
+        elFlowJsonEditor.focus();
+        return;
+      }
+    }
+
+    // Build the create flow payload
+    const payload = {
+      name: flowName,
+      categories: [category]
+    };
+
+    if (flowJsonRaw && flowJsonRaw !== '{\n  "version": "5.0",\n  "screens": []\n}') {
+      payload.flow_json = flowJsonRaw;
+    }
+
+    if (publishNow) {
+      payload.publish = true;
+    }
+
+    // Load into Request Studio
+    activePreset = 'create_flow';
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      if (btn.getAttribute('data-preset') === 'create_flow') {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    elActivePresetTitle.textContent = 'Create WhatsApp Flow';
+    elReqMethod.value = 'POST';
+    const wabaId = elWabaId.value || 'WABA_ACCOUNT_ID';
+    elReqPath.value = `${wabaId}/flows`;
+
+    // Set body as JSON
+    elBodyTypeJson.checked = true;
+    toggleBodyType('json');
+    elBodyJsonTextarea.value = JSON.stringify(payload, null, 2);
+
+    // Clear query params
+    elQueryParamsList.innerHTML = '';
+
+    // Show body section
+    document.getElementById('body-section').classList.remove('hidden');
+
+    // Scroll to Request Studio
+    document.querySelector('.builder-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Visual feedback
+    const btnText = elBtnGenerateFlowRequest.querySelector('.btn-text');
+    btnText.textContent = '✅ Loaded!';
+    setTimeout(() => {
+      btnText.textContent = '⚡ Load into Request Studio';
+    }, 1500);
+  });
+
+  // ==========================================================================
+  // WEBHOOKS MANAGER & LIVE FEED LOGIC
+  // ==========================================================================
+  
+  let activeSidebarTab = 'history';
+  let webhookPollInterval = null;
+  let lastSeenWebhookCount = 0;
+  let totalWebhookCount = 0;
+  let webhooksList = [];
+
+  // Initialize Webhook URL Display
+  function initWebhookUrl() {
+    const origin = window.location.origin;
+    const webhookUrl = `${origin}/api/webhook`;
+    elWebhookEndpointUrl.textContent = webhookUrl;
+  }
+
+  // Copy Webhook URL to Clipboard
+  elBtnCopyWebhookUrl.addEventListener('click', () => {
+    const url = elWebhookEndpointUrl.textContent;
+    navigator.clipboard.writeText(url).then(() => {
+      elBtnCopyWebhookUrl.textContent = 'Copied!';
+      setTimeout(() => {
+        elBtnCopyWebhookUrl.textContent = 'Copy';
+      }, 1500);
+    });
+  });
+
+  // Sync Local Server Verify Token
+  elBtnSaveLocalToken.addEventListener('click', async () => {
+    const verifyToken = elLocalVerifyToken.value.trim();
+    if (!verifyToken) {
+      alert('Please enter a verification token.');
+      return;
+    }
+
+    elBtnSaveLocalToken.disabled = true;
+    elBtnSaveLocalToken.textContent = 'Syncing...';
+
+    try {
+      const response = await fetch('/api/webhook/settings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ verifyToken })
+      });
+      const result = await response.json();
+      if (result.success) {
+        elBtnSaveLocalToken.textContent = 'Synced!';
+        elBtnSaveLocalToken.style.backgroundColor = 'var(--color-success)';
+        setTimeout(() => {
+          elBtnSaveLocalToken.textContent = 'Sync';
+          elBtnSaveLocalToken.style.backgroundColor = '';
+        }, 1500);
+      } else {
+        alert('Failed to update verify token on server.');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Network error trying to sync verify token.');
+    } finally {
+      elBtnSaveLocalToken.disabled = false;
+    }
+  });
+
+  // Sidebar Tab Switching
+  function switchSidebarTab(tabId) {
+    activeSidebarTab = tabId;
+    
+    if (tabId === 'history') {
+      elTabHistory.classList.add('active');
+      elTabWebhooks.classList.remove('active');
+      elSectionHistory.classList.remove('hidden');
+      elSectionWebhooks.classList.add('hidden');
+    } else {
+      elTabHistory.classList.remove('active');
+      elTabWebhooks.classList.add('active');
+      elSectionHistory.classList.add('hidden');
+      elSectionWebhooks.classList.remove('hidden');
+      
+      // Hide badge count on selection
+      elWebhookBadge.classList.add('hidden');
+      lastSeenWebhookCount = totalWebhookCount;
+    }
+  }
+
+  elTabHistory.addEventListener('click', () => switchSidebarTab('history'));
+  elTabWebhooks.addEventListener('click', () => switchSidebarTab('webhooks'));
+
+  // Clear received webhooks log
+  elBtnClearWebhooks.addEventListener('click', async () => {
+    if (confirm('Are you sure you want to clear received webhooks?')) {
+      try {
+        const response = await fetch('/api/webhooks/clear', { method: 'POST' });
+        if (response.ok) {
+          webhooksList = [];
+          totalWebhookCount = 0;
+          lastSeenWebhookCount = 0;
+          elWebhookBadge.classList.add('hidden');
+          renderWebhooks();
+        }
+      } catch (e) {
+        console.error('Failed to clear webhooks', e);
+      }
+    }
+  });
+
+  // Fetch Received Webhooks from Server
+  async function fetchReceivedWebhooks() {
+    try {
+      const response = await fetch('/api/webhooks');
+      if (!response.ok) return;
+      const webhooks = await response.json();
+      
+      // Check if we received new webhooks
+      if (webhooks.length !== webhooksList.length) {
+        webhooksList = webhooks;
+        totalWebhookCount = webhooksList.length;
+
+        // Render received list
+        renderWebhooks();
+
+        // Update badge if Webhooks tab is not active
+        if (activeSidebarTab !== 'webhooks') {
+          const diff = totalWebhookCount - lastSeenWebhookCount;
+          if (diff > 0) {
+            elWebhookBadge.textContent = diff;
+            elWebhookBadge.classList.remove('hidden');
+          }
+        } else {
+          lastSeenWebhookCount = totalWebhookCount;
+        }
+      }
+    } catch (e) {
+      console.warn('Error fetching webhooks:', e);
+    }
+  }
+
+  // Render Webhooks Feed
+  function renderWebhooks() {
+    if (webhooksList.length === 0) {
+      elWebhookItemsContainer.innerHTML = `
+        <div class="history-placeholder">
+          <p>Listening for webhooks...</p>
+          <p class="muted-subtext">Configure your Meta App Webhook URL to point to this server to capture webhook event payloads.</p>
+        </div>
+      `;
+      return;
+    }
+
+    elWebhookItemsContainer.innerHTML = webhooksList.map(webhook => {
+      const formattedTime = new Date(webhook.timestamp).toLocaleTimeString();
+      
+      // Determine what type of webhook event it is
+      let eventTypeLabel = 'EVENT';
+      let eventSummary = 'Webhook notification';
+      let badgeClass = '';
+
+      if (webhook.body) {
+        const entry = webhook.body.entry?.[0];
+        const change = entry?.changes?.[0];
+        const val = change?.value;
+        
+        if (val) {
+          if (val.statuses?.[0]) {
+            eventTypeLabel = 'STATUS';
+            badgeClass = 'status-update';
+            const status = val.statuses[0];
+            eventSummary = `Msg ID ending in ...${status.id.substr(-6)}: status ${status.status}`;
+          } else if (val.messages?.[0]) {
+            eventTypeLabel = 'MSG';
+            badgeClass = 'incoming-msg';
+            const msg = val.messages[0];
+            const sender = msg.from;
+            const msgType = msg.type;
+            const textBody = msg.text?.body || '';
+            eventSummary = `From ${sender}: ${msgType} "${textBody.substr(0, 15)}${textBody.length > 15 ? '...' : ''}"`;
+          } else if (change.field) {
+            eventSummary = `Field: ${change.field}`;
+          }
+        } else if (webhook.body.object) {
+          eventSummary = `Obj: ${webhook.body.object}`;
+        }
+      }
+
+      return `
+        <div class="webhook-item" data-id="${webhook.id}">
+          <div class="webhook-item-header">
+            <div class="webhook-item-meta">
+              <div class="webhook-item-title">
+                <span class="webhook-event-badge ${badgeClass}">${eventTypeLabel}</span>
+                <span class="webhook-item-time">${formattedTime}</span>
+              </div>
+            </div>
+            <div class="webhook-item-summary">${escapeHtml(eventSummary)}</div>
+          </div>
+          <div class="webhook-item-details">
+            <pre class="webhook-json-payload"><code>${escapeHtml(JSON.stringify(webhook.body, null, 2))}</code></pre>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Attach click toggle for details accordion
+    elWebhookItemsContainer.querySelectorAll('.webhook-item-header').forEach(el => {
+      el.addEventListener('click', () => {
+        const parent = el.closest('.webhook-item');
+        parent.classList.toggle('expanded');
+      });
+    });
+  }
+
+  // Start polling when loaded
+  function startWebhookPolling() {
+    initWebhookUrl();
+    if (webhookPollInterval) clearInterval(webhookPollInterval);
+    // Poll every 3 seconds
+    webhookPollInterval = setInterval(fetchReceivedWebhooks, 3000);
+    fetchReceivedWebhooks();
+  }
+
+  function stopWebhookPolling() {
+    if (webhookPollInterval) {
+      clearInterval(webhookPollInterval);
+      webhookPollInterval = null;
+    }
+  }
 
   // ==========================================================================
   // APP INITIALIZATION
