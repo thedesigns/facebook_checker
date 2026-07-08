@@ -111,14 +111,20 @@
               <input type="text" id="meta-waba-id" placeholder="WABA Account ID">
             </div>
             <div class="form-group col-6">
-              <label for="meta-app-id">App ID</label>
-              <input type="text" id="meta-app-id" placeholder="Optional App ID">
+              <label for="meta-business-id">Business ID</label>
+              <input type="text" id="meta-business-id" placeholder="Business Portfolio ID">
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="meta-app-secret">App Secret</label>
-            <input type="password" id="meta-app-secret" placeholder="Optional App Secret" autocomplete="off">
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="meta-app-id">App ID</label>
+              <input type="text" id="meta-app-id" placeholder="Optional App ID">
+            </div>
+            <div class="form-group col-6">
+              <label for="meta-app-secret">App Secret</label>
+              <input type="password" id="meta-app-secret" placeholder="Optional App Secret" autocomplete="off">
+            </div>
           </div>
 
           <div class="form-row">
@@ -180,6 +186,25 @@
             </button>
             <button type="button" class="preset-btn" id="preset-custom-post" data-preset="custom_post">
               <span class="badge post">POST</span> Custom Endpoint
+            </button>
+
+            <!-- Business & Access Divider -->
+            <div class="preset-group-divider preset-business-divider">
+              <span class="divider-icon">💼</span>
+              <span class="divider-label">Business & App Access</span>
+            </div>
+
+            <button type="button" class="preset-btn preset-business" id="preset-get-business" data-preset="get_business_portfolio">
+              <span class="badge get">GET</span> Portfolio Verification
+            </button>
+            <button type="button" class="preset-btn preset-business" id="preset-get-business-wabas" data-preset="get_business_wabas">
+              <span class="badge get">GET</span> Business WABAs
+            </button>
+            <button type="button" class="preset-btn preset-business" id="preset-get-app-roles" data-preset="get_app_roles">
+              <span class="badge get">GET</span> App Roles (Devs)
+            </button>
+            <button type="button" class="preset-btn preset-business" id="preset-add-app-role" data-preset="add_app_role">
+              <span class="badge post">POST</span> Add App Role
             </button>
 
             <!-- Webhooks Presets Divider -->

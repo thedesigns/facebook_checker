@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const elPageId = document.getElementById('meta-page-id');
   const elPhoneId = document.getElementById('meta-phone-id');
   const elWabaId = document.getElementById('meta-waba-id');
+  const elBusinessId = document.getElementById('meta-business-id');
   const elAppId = document.getElementById('meta-app-id');
   const elAppSecret = document.getElementById('meta-app-secret');
   const elWebhookUrl = document.getElementById('meta-webhook-url');
@@ -201,6 +202,53 @@ document.addEventListener('DOMContentLoaded', () => {
       bodyFields: [],
       jsonBody: '{\n  \n}'
     },
+    // ========== BUSINESS & APP ACCESS PRESETS ==========
+    get_business_portfolio: {
+      title: 'Get Business Portfolio & Verification',
+      method: 'GET',
+      path: '{business_id}',
+      bodyType: 'urlencoded',
+      queryParams: [
+        { key: 'fields', value: 'name,verification_status,primary_page' },
+        { key: 'access_token', value: '{token}' }
+      ],
+      bodyFields: [],
+      jsonBody: ''
+    },
+    get_business_wabas: {
+      title: 'Get Business WhatsApp Accounts',
+      method: 'GET',
+      path: '{business_id}/whatsapp_business_accounts',
+      bodyType: 'urlencoded',
+      queryParams: [
+        { key: 'access_token', value: '{token}' }
+      ],
+      bodyFields: [],
+      jsonBody: ''
+    },
+    get_app_roles: {
+      title: 'Get App Developer Roles',
+      method: 'GET',
+      path: '{app_id}/roles',
+      bodyType: 'urlencoded',
+      queryParams: [
+        { key: 'access_token', value: '{token}' }
+      ],
+      bodyFields: [],
+      jsonBody: ''
+    },
+    add_app_role: {
+      title: 'Add/Invite App Developer Role',
+      method: 'POST',
+      path: '{app_id}/roles',
+      bodyType: 'urlencoded',
+      queryParams: [],
+      bodyFields: [
+        { key: 'user', value: 'DEVELOPER_USER_ID_OR_EMAIL' },
+        { key: 'role', value: 'developer' }
+      ],
+      jsonBody: ''
+    },
     // ========== WEBHOOKS PRESETS ==========
     update_webhook_subscription: {
       title: 'Configure Meta App Webhook Subscription',
@@ -321,6 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
       pageId: elPageId.value,
       phoneId: elPhoneId.value,
       wabaId: elWabaId.value,
+      businessId: elBusinessId.value,
       appId: elAppId.value,
       appSecret: elAppSecret.value,
       webhookUrl: elWebhookUrl.value,
@@ -348,6 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
     elPageId.value = '';
     elPhoneId.value = '';
     elWabaId.value = '';
+    elBusinessId.value = '';
     elAppId.value = '';
     elAppSecret.value = '';
     elWebhookUrl.value = '';
@@ -373,6 +423,7 @@ document.addEventListener('DOMContentLoaded', () => {
         elPageId.value = creds.pageId || '';
         elPhoneId.value = creds.phoneId || '';
         elWabaId.value = creds.wabaId || '';
+        elBusinessId.value = creds.businessId || '';
         elAppId.value = creds.appId || '';
         elAppSecret.value = creds.appSecret || '';
         elWebhookUrl.value = creds.webhookUrl || '';
@@ -524,6 +575,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const pageId = elPageId.value || '721001787473104';
     const phoneId = elPhoneId.value || '1419051192998404';
     const wabaId = elWabaId.value || 'WABA_ACCOUNT_ID';
+    const businessId = elBusinessId.value || 'BUSINESS_ID';
     const appId = elAppId.value || 'APP_ID';
     const appSecret = elAppSecret.value || '';
     const webhookUrl = elWebhookUrl.value || '';
@@ -535,6 +587,7 @@ document.addEventListener('DOMContentLoaded', () => {
     res = res.replace(/{page_id}/g, pageId);
     res = res.replace(/{phone_id}/g, phoneId);
     res = res.replace(/{waba_id}/g, wabaId);
+    res = res.replace(/{business_id}/g, businessId);
     res = res.replace(/{app_id}/g, appId);
     res = res.replace(/{app_secret}/g, appSecret);
     res = res.replace(/{app_access_token}/g, appAccessToken);
